@@ -1,69 +1,65 @@
 package com.cognizant.exception;
 
-
-
-import java.util.HashMap;
-import java.util.Map;
-
-
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-
-
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
-    
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleInvalidArguments(MethodArgumentNotValidException ex){
-        Map<String, String> errorMap = new HashMap<>();
-        
-        ex.getBindingResult().getFieldErrors().forEach(error->{
-            errorMap.put(error.getField(), error.getDefaultMessage());
-        });
-    return errorMap;
-    
-}
-    
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(UserNotFoundException.class)
-    public Map<String,String> handleBusinessException(UserNotFoundException ex){
-        Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("ErrorMessage", ex.getMessage());
-        return errorMap;
-    }
-    
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(DataAlreayExistException.class)
-    public Map<String,String> handleUserAlreadyExistException(DataAlreayExistException ex){
-        Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("ErrorMessage", ex.getMessage());
-        return errorMap;
-    }
-    
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public Map<String,String> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex){
-        Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("ErrorMessage", ex.getMessage());
-        return errorMap;
-    }
-    
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public Map<String,String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex){
-        Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("ErrorMessage", ex.getMessage());
-        return errorMap;
-    }
-    
-    
-    
+
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<ErrorResponse> UserNotFoundExceptionHandler(UserNotFoundException ex) {
+		ErrorResponse er = new ErrorResponse();
+		er.setMessage(ex.getMessage());
+		er.setHttpStatus(HttpStatus.NOT_FOUND);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er);
+	}
+
+	@ExceptionHandler(DataAlreayExistException.class)
+	public ResponseEntity<ErrorResponse> DataAlreayExistExceptionHandler(DataAlreayExistException ex) {
+		ErrorResponse er = new ErrorResponse();
+		er.setMessage(ex.getMessage());
+		er.setHttpStatus(HttpStatus.CONFLICT);
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(er);
+	}
+
+	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+	public ResponseEntity<ErrorResponse> HttpRequestMethodNotSupportedExceptionHandler(
+			HttpRequestMethodNotSupportedException ex) {
+		ErrorResponse er = new ErrorResponse();
+		er.setMessage(ex.getMessage());
+		er.setHttpStatus(HttpStatus.METHOD_NOT_ALLOWED);
+		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(er);
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<List<ErrorResponse>> MethodArgumentNotValidExceptionHandler(
+			MethodArgumentNotValidException ex) {
+		List<ErrorResponse> errors = new ArrayList<>();
+		ex.getBindingResult().getFieldErrors().forEach(error -> {
+			ErrorResponse er = new ErrorResponse();
+			er.setMessage(error.getDefaultMessage());
+			er.setHttpStatus(HttpStatus.BAD_REQUEST);
+			errors.add(er);
+		});
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> MethodArgumentTypeMismatchExceptionHandler(
+			MethodArgumentTypeMismatchException ex) {
+		ErrorResponse er = new ErrorResponse();
+		er.setMessage("Invalid Argument Type !");
+		er.setHttpStatus(HttpStatus.BAD_REQUEST);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
+	}
+
 }
