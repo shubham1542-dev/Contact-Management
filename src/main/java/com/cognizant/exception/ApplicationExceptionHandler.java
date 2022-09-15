@@ -18,7 +18,7 @@ public class ApplicationExceptionHandler {
 	public ResponseEntity<ErrorResponse> UserNotFoundExceptionHandler(UserNotFoundException ex) {
 		ErrorResponse er = new ErrorResponse();
 		er.setMessage(ex.getMessage());
-		er.setHttpStatus(HttpStatus.NOT_FOUND);
+		er.setHttpStatusCode(HttpStatus.NOT_FOUND.value());
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er);
 	}
 
@@ -26,7 +26,7 @@ public class ApplicationExceptionHandler {
 	public ResponseEntity<ErrorResponse> DataAlreayExistExceptionHandler(DataAlreayExistException ex) {
 		ErrorResponse er = new ErrorResponse();
 		er.setMessage(ex.getMessage());
-		er.setHttpStatus(HttpStatus.CONFLICT);
+		er.setHttpStatusCode(HttpStatus.CONFLICT.value());
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(er);
 	}
 
@@ -35,7 +35,7 @@ public class ApplicationExceptionHandler {
 			HttpRequestMethodNotSupportedException ex) {
 		ErrorResponse er = new ErrorResponse();
 		er.setMessage(ex.getMessage());
-		er.setHttpStatus(HttpStatus.METHOD_NOT_ALLOWED);
+		er.setHttpStatusCode(HttpStatus.METHOD_NOT_ALLOWED.value());
 		return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(er);
 	}
 
@@ -46,7 +46,7 @@ public class ApplicationExceptionHandler {
 		ex.getBindingResult().getFieldErrors().forEach(error -> {
 			ErrorResponse er = new ErrorResponse();
 			er.setMessage(error.getDefaultMessage());
-			er.setHttpStatus(HttpStatus.BAD_REQUEST);
+			er.setHttpStatusCode(HttpStatus.BAD_REQUEST.value());
 			errors.add(er);
 		});
 
@@ -58,7 +58,7 @@ public class ApplicationExceptionHandler {
 			MethodArgumentTypeMismatchException ex) {
 		ErrorResponse er = new ErrorResponse();
 		er.setMessage("Invalid Argument Type !");
-		er.setHttpStatus(HttpStatus.BAD_REQUEST);
+		er.setHttpStatusCode(HttpStatus.BAD_REQUEST.value());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
 	}
 
